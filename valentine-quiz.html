@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Valentine Quiz 💖</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
+  body {
+    margin: 0; font-family: 'Comic Neue', cursive, Arial, sans-serif;
+    background: linear-gradient(135deg,#ff9ad5,#ffdde1);
+    height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center;
+  }
+  .container {
+    background: white; 
+    width: 450px; 
+    padding: 30px;
+    border-radius: 25px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    text-align: center; 
+    position: relative;
+  }
+  button {
+    padding: 10px 20px; 
+    margin: 10px; 
+    border-radius: 20px;
+    border: none; 
+    background: #ff4d88; 
+    cursor: pointer; 
+    font-size: 16px;
+    color: white;
+    font-weight: 700;
+    transition: 0.3s;
+  }
+  button:hover {
+    background: #ff2a65;
+  }
+  h2 {
+    color: #ff2a65;
+  }
+  .msg {
+    margin-top: 15px;
+    font-size: 16px;
+    min-height: 40px;
+    font-weight: 600;
+    color: #cc3366;
+    min-height: 48px;
+  }
+  /* Floating hearts */
+  .heart-bg {
+    position: fixed; 
+    bottom: -20px; 
+    font-size: 20px; 
+    animation: floatUp linear infinite;
+    user-select: none;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-110vh); opacity: 0; }
+  }
+  /* Warning */
+  .warning {
+    font-size: 22px; 
+    color: #ff2a65;
+    font-weight: 700;
+    animation: blink 1.2s infinite alternate;
+  }
+  @keyframes blink {
+    from { opacity: 1; }
+    to { opacity: 0.6; }
+  }
+  /* Popup */
+  .popup {
+    position: fixed; 
+    top: 20px; 
+    right: 20px; 
+    background: white; 
+    padding: 12px 18px; 
+    border-radius: 15px; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+    font-weight: bold; 
+    color: #ff2a65;
+    user-select: none;
+    z-index: 100;
+    animation: fadeOut 2s forwards;
+  }
+  @keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-20px); }
+  }
+  /* Confetti */
+  .confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    animation: fall linear forwards;
+    border-radius: 3px;
+    opacity: 0.9;
+  }
+  @keyframes fall {
+    to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  /* YES / NO buttons */
+  #noBtn {
+    position: relative;
+    transition: all 0.4s ease;
+  }
+  /* Pulse animation for heart */
+  @keyframes pulse {
+    0% { transform: scale(1);}
+    100% { transform: scale(1.1);}
+  }
+  /* Final heart and photo container */
+  .final-container {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 25px; 
+    flex-wrap: wrap; 
+    margin-top: 20px;
+  }
+  .photo-box {
+    width: 250px; 
+    height: 250px; 
+    border-radius: 15px; 
+    background-image: url('C:/Users/mushin/OneDrive - IFS/Desktop/testest/our-photo.jpeg');
+    background-size: cover;
+    background-position: top;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    user-select: none;
+  }
+  .heart-btn {
+    width: 120px; 
+    height: 120px;
+    background: #ff4d88;
+    clip-path: polygon(50% 0%, 84% 24%, 100% 58%, 79% 90%, 50% 100%, 21% 90%, 0 58%, 16% 24%);
+    cursor: pointer;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    animation: pulse 1.2s infinite alternate;
+    box-shadow: 0 0 15px #ff4d88;
+    user-select: none;
+  }
+  .heart-btn span {
+    font-size: 48px; 
+    color: #fff;
+    user-select: none;
+  }
+  .love-letter {
+    margin-top: 20px; 
+    text-align: left; 
+    font-size: 15px; 
+    line-height: 1.6;
+    color: #cc3366;
+    font-weight: 600;
+  }
+  .final-photo {
+    margin-top: 20px;
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 7px 20px rgba(0,0,0,0.25);
+    user-select: none;
+  }
+  /* Heart spinner */
+  .heart-spinner {
+    display: inline-block;
+    margin: 20px 0;
+    font-size: 0;
+  }
+  .heart-spinner span {
+    display: inline-block;
+    font-size: 30px;
+    animation: heartBounce 1s ease-in-out infinite;
+    margin: 0 5px;
+  }
+  .heart-spinner span:nth-child(1) { animation-delay: 0s; }
+  .heart-spinner span:nth-child(2) { animation-delay: 0.2s; }
+  .heart-spinner span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes heartBounce {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
+    50% { transform: translateY(-15px) scale(1.2); opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="content"></div>
+
+<script>
+  // Floating hearts
+  function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart-bg");
+    heart.innerHTML = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 7000);
+  }
+  setInterval(createHeart, 400);
+
+  // Quiz questions and answers
+  const quiz = [
+    {q: "1. Where did we meet? 💕", o: ["Bangalore", "Vellore", "BMTC bus", "Layout entrance"], a: 2},
+    {q: "2. Where we used to meet often? 🌸", o: ["National college cafe", "Yadyur lake", "CCD", "Pani puri gadi"], a: 1},
+    {q: "3. Which date did you accept my proposal? 💍", o: ["Dec 12", "Jan 30", "Feb 1", "Feb 3"], a: 2},
+    {q: "4. Whats our nick name? 🥰", o: ["Appi", "Muddu", "Honey", "Darling"], a: 1},
+    {q: "5. Do you want to be my Valentine? 💖", o: ["Yes", "No"], a: 0}
+  ];
+
+  const wrongMessages = ["Oopsieee 😜 Try again!", "Hehehe nooo 😌💕", "Aiyooo wrong 😂", "Memory test failed! 😏"];
+  const correctMessages = ["Yay! 🎉 Correct answer!", "You got it right 😘", "Perfect! 💖", "Right one, love! 💕"];
+  function randomMessage(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  let current = 0;
+  let noCount = 0;
+  let yesCount = 0;
+
+  // Initial Warning Screen
+  function showWarning() {
+    document.getElementById("content").innerHTML = `
+      <h2 class="warning">⚠ PRIVATE CONTENT ⚠</h2>
+      <p>This quiz contains extremely emotional and romantic material 😌💖</p>
+      <p>Please make sure you are alone before proceeding...</p>
+      <button onclick="startQuiz()">I am alone 🙈</button>
+    `;
+  }
+
+  // Start quiz function
+  function startQuiz() {
+    current = 0;
+    loadQuestion();
+  }
+
+  // Load question
+  function loadQuestion() {
+    if(current === 4) {
+      // final question is special
+      showFinalQuestion();
+      return;
+    }
+    const q = quiz[current];
+    let html = `<h2>${q.q}</h2>`;
+    q.o.forEach((opt, i) => {
+      html += `<button onclick="checkAnswer(${i})">${opt}</button>`;
+    });
+    html += `<div id="msg" class="msg"></div>`;
+    document.getElementById("content").innerHTML = html;
+  }
+
+  // Check answer for questions 1-4
+  function checkAnswer(i) {
+    const q = quiz[current];
+    const msgDiv = document.getElementById("msg");
+    if(i === q.a) {
+      msgDiv.innerHTML = randomMessage(correctMessages);
+
+      // Special for 3rd question (proposal date)
+      if(current === 2) {
+        setTimeout(() => {
+          msgDiv.innerHTML = "😏 You remembered Feb 1… then why didn’t you wish this month? You missed it 💔😂";
+          setTimeout(() => {
+            msgDiv.innerHTML += '<div class="heart-spinner"><span>💖</span><span>💖</span><span>💖</span></div>';
+            setTimeout(() => {
+              current++;
+              loadQuestion();
+            }, 800);
+          }, 2500);
+        }, 1000);
+      } else {
+        setTimeout(() => {
+          msgDiv.innerHTML += '<div class="heart-spinner"><span>💖</span><span>💖</span><span>💖</span></div>';
+          setTimeout(() => {
+            current++;
+            if(current < quiz.length) loadQuestion();
+          }, 800);
+        }, 800);
+      }
+    } else {
+      msgDiv.innerHTML = randomMessage(wrongMessages);
+    }
+  }
+
+  // Show final question (Yes/No)
+  function showFinalQuestion() {
+    document.getElementById("content").innerHTML = `
+      <h2>Do you want to be my Valentine? 💖</h2>
+      <button id="yesBtn" onclick="yesClicked()">Yes</button>
+      <button id="noBtn" onclick="noClicked()">No</button>
+      <div id="msg" class="msg"></div>
+    `;
+
+    // Reset NO button position
+    const noBtn = document.getElementById("noBtn");
+    noBtn.style.position = "relative";
+    noBtn.style.left = "0";
+    noBtn.style.top = "0";
+    noBtn.onmouseover = null;
+
+    noCount = 0;
+    yesCount = 0;
+  }
+
+  // NO button antics
+  function noClicked() {
+    noCount++;
+    showPopup("Error 404: No not found 😂");
+    const no = document.getElementById("noBtn");
+    no.style.transform = `scale(${Math.max(0.6, 1 - noCount * 0.2)})`;
+
+    if(noCount >= 1) moveNoButton();
+    if(noCount >= 2) {
+      // on 3rd no click disable click and enable onhover move
+      no.onmouseover = moveNoButton;
+      no.style.pointerEvents = "auto";
+    }
+  }
+  function moveNoButton() {
+    const no = document.getElementById("noBtn");
+    no.style.position = "absolute";
+    no.style.left = Math.random() * (window.innerWidth - 120) + "px";
+    no.style.top = Math.random() * (window.innerHeight - 60) + "px";
+  }
+
+  // YES button click
+  function yesClicked() {
+    yesCount++;
+    const yes = document.getElementById("yesBtn");
+    yes.style.transform = `scale(${1 + yesCount * 0.2})`;
+    launchConfetti();
+
+    setTimeout(() => {
+      document.getElementById("content").innerHTML = `
+        <h2>Click the heart to unlock your surprise 💖</h2>
+        <div class="final-container">
+          <div class="photo-box" aria-label="Our photo"></div>
+          <div class="heart-btn" onclick="showFinal()" aria-label="Click heart to unlock surprise">
+            <span>❤️</span>
+          </div>
+        </div>
+        <p style="margin-top:15px; font-weight:bold; color:#ff2a65;">💖 Click the heart 💖</p>
+      `;
+    }, 500);
+  }
+
+  // Confetti animation
+  function launchConfetti() {
+    for(let i=0; i<70; i++) {
+      const c = document.createElement("div");
+      c.classList.add("confetti");
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.background = ["#ff4d88", "#ff9ad5", "#ffd700", "#ff69b4"][Math.floor(Math.random() * 4)];
+      c.style.animationDuration = (Math.random() * 3 + 2) + "s";
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 5000);
+    }
+  }
+
+  // Show popup message
+  function showPopup(text) {
+    const p = document.createElement("div");
+    p.className = "popup";
+    p.innerText = text;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 2000);
+  }
+
+  // Final love letter with photo shown after clicking heart
+  function showFinal() {
+    launchConfetti();
+    document.getElementById("content").innerHTML = `
+      <h2>Thank you for being my Valentine Muddu 💖</h2>
+      <img src="C:/Users/mushin/OneDrive - IFS/Desktop/testest/family-photo.jpeg" alt="Our photo" class="final-photo" />
+      <div class="love-letter">
+        <p>Fifteen years of love, laughter, growth and beautiful memories.</p>
+        <p>You are my best friend, my strength, and the heart of our family.</p>
+        <p>In every lifetime, I will always choose you.</p>
+        <p>Forever yours 💕</p>
+      </div>
+    `;
+  }
+
+  // Start with warning screen
+  showWarning();
+</script>
+
+</body>
+</html>
